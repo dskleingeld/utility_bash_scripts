@@ -1,0 +1,78 @@
+#!/bin/bash
+# By: David
+# Date: September 30th, 2018
+#
+# Usage: Bind this file as executable + the command line paramaters:
+#				 next, prev, volumeUp, volumeDown to media keys.  
+#
+# Requires: python3 and Garrett Holbrook's volume-change.py
+
+mpd_ip=192.168.1.10
+mpdhost=`mpc -h $mpd_ip`
+
+
+next ()
+{
+	if [[ $mpdhost == *"[playing]"* ]]; then
+		mpc -h $mpd_ip next
+		notify-send --hint=int:transient:1 -t 1000 "MPD" "`mpc -h 192.168.1.10 current`"
+	#else
+		#do something when not using media keys for mpd
+	fi
+}
+
+prev ()
+{
+	if [[ $mpdhost == *"[playing]"* ]]; then
+		mpc -h $mpd_ip prev
+		notify-send --hint=int:transient:1 -t 1000 "MPD" "`mpc -h 192.168.1.10 current`"
+	#else
+		#do something when not using media keys for mpd  
+	fi
+}
+
+volumeUp ()
+{
+	if [[ $mpdhost == *"[playing]"* ]]; then
+		mpc -h $mpd_ip volume +1
+	else
+		#amixer -D pulse sset Master 3%+
+		volume-change.py increase 3
+	fi
+}
+
+volumeDown ()
+{
+	if [[ $mpdhost == *"[playing]"* ]]; then
+		mpc -h $mpd_ip volume -1
+	else
+		#amixer -D pulse sset Master 3%+
+		volume-change.py decrease 3
+	fi
+}
+
+case "$1" in
+     next)
+        next
+            ;;
+     prev)
+        prev
+        
+            ;;
+#     toggle)
+#        mpc -h 192.168.1.10 toggle 
+#        notify-send --hint=int:transient:1 -t 1000 "MPD" "`mpc -h 192.168.1.10 | sed -n 2p`" && notify-send --hint=int:transient:1 -t 1000 "MPD" "`mpc -h 192.168.1.10 current`"
+#            ;;
+#     stop)
+#        mpc -h 192.168.1.10 stop 
+#        notify-send --hint=int:transient:1 -t 1000 "MPD" "stopped"
+#            ;;
+     volumeUp)
+        volumeUp
+            ;;
+     volumeDown)
+        volumeDown
+            ;;
+esac
+
+exit 0
