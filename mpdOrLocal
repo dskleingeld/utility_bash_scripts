@@ -3,19 +3,22 @@
 # Date: September 30th, 2018
 #
 # Usage: Bind this file as executable + the command line paramaters:
-#				 next, prev, volumeUp, volumeDown to media keys.  
+#				 next, prev, volumeUp, volumeDown to media keys. And set the 
+#	       variable mpd_ip to your mpd servers local ip 
 #
 # Requires: python3 and Garrett Holbrook's volume-change.py
 
 mpd_ip=192.168.1.10
 mpdhost=`mpc -h $mpd_ip`
-
+display_notifications=false
 
 next ()
 {
 	if [[ $mpdhost == *"[playing]"* ]]; then
 		mpc -h $mpd_ip next
-		notify-send --hint=int:transient:1 -t 1000 "MPD" "`mpc -h 192.168.1.10 current`"
+		if [ "$display_notifications" = true ]; then
+			notify-send --hint=int:transient:1 -t 1000 "MPD" "`mpc -h $mpd_ip current`"
+		fi
 	#else
 		#do something when not using media keys for mpd
 	fi
@@ -25,7 +28,9 @@ prev ()
 {
 	if [[ $mpdhost == *"[playing]"* ]]; then
 		mpc -h $mpd_ip prev
-		notify-send --hint=int:transient:1 -t 1000 "MPD" "`mpc -h 192.168.1.10 current`"
+		if [ "$display_notifications" = true ]; then
+			notify-send --hint=int:transient:1 -t 1000 "MPD" "`mpc -h $mpd_ip current`"
+		fi
 	#else
 		#do something when not using media keys for mpd  
 	fi
