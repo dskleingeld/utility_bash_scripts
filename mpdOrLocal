@@ -36,6 +36,14 @@ prev ()
 	fi
 }
 
+toggle ()
+{
+	mpc -h $mpd_ip toggle
+	if [ "$display_notifications" = true ]; then
+  	notify-send --hint=int:transient:1 -t 1000 "MPD" "`mpc -h $mpd_ip | sed -n 2p`" && notify-send --hint=int:transient:1 -t 1000 "MPD" "`mpc -h $mpd_ip current`"
+	fi
+}
+
 volumeUp ()
 {
 	if [[ $mpdhost == *"[playing]"* ]]; then
@@ -64,10 +72,9 @@ case "$1" in
         prev
         
             ;;
-#     toggle)
-#        mpc -h 192.168.1.10 toggle 
-#        notify-send --hint=int:transient:1 -t 1000 "MPD" "`mpc -h 192.168.1.10 | sed -n 2p`" && notify-send --hint=int:transient:1 -t 1000 "MPD" "`mpc -h 192.168.1.10 current`"
-#            ;;
+     toggle)
+				toggle
+            ;;
 #     stop)
 #        mpc -h 192.168.1.10 stop 
 #        notify-send --hint=int:transient:1 -t 1000 "MPD" "stopped"
