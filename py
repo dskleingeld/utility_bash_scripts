@@ -11,8 +11,10 @@
 #try to find a main file
 path=`find -name main.py`
 
+echo 'found' $path
+
 #if no main file was found find the last changed .py file
-if [[ !  -z  $path  ]]; then
+if [[ -z  $path ]]; then
     path=`find . -type f -name "*.py" -printf '%T@ %p\n' \
         | sort -n           \
         | tail -1           \
