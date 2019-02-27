@@ -1,0 +1,48 @@
+#!/bin/bash
+# By: David
+# Date: November 20e, 2018
+#
+# Usage: call in any directory, this will try to find a main.tex file. If it 
+#        can it will attempt a compile using pdflatex. Else it will attempt to 
+#        compile the last changed .tex file in in the current or any subdir
+#
+#        Requires: pdflatex
+
+#try to find a main file
+path=`find -name main.tex`
+
+#if no main file was found find the last changed .tex file
+if [[ -z  $path ]]; then
+    path=`find . -type f -name "*.tex" -printf '%T@ %p\n' \
+        | sort -n           \
+        | tail -1           \
+        | cut -f2- -d" "    \
+        | cut -c 3-`
+fi
+path=${path%.tex} #always remove the file extension .tex before handing to bibtex
+
+workingdir=$(dirname "${path}")
+filename=$(basename "${path}")
+
+echo 'compiling from: ' $path
+#switch to the dir in which the file was found, so the working 
+#dir for the python program is consistant with running it from its 
+#location
+
+compile ()
+{ 
+    pdflatex -shell-escape -interaction=batchmode -draftmode $1 
+    bibtex $1
+    pdflatex -shell-escape -interaction=batchmode $1 
+    pdflatex -shell-escape $1
+    filename=$(echo $1 | cut -f 1 -d '.')
+    #open the pdf that has been outputted
+    #if already open this refreshes it
+    xdg-open "$filename.pdf"
+} 
+
+
+
+#then compile with the file as input
+(cd $workingdir; compile $filename)
+
